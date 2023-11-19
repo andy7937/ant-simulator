@@ -46,7 +46,7 @@ public class AntSimulator extends JPanel {
         queen = new Queen(100, 0, new Point (x, y));
 
         // spawn 10 at queen location
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             ants.add(new Ant(100, 500, new Point(x, y)));
         }
 
