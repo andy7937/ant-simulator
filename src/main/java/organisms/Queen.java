@@ -15,9 +15,9 @@ public class Queen {
     }
 
     public void layEgg() {
-        if (energy >= 50) {
+        if (energy >= 200) {
             AntSimulator.getInstance().ants.add(new Ant(50, 50, new Point(position.x, position.y)));
-            energy -= 50;
+            energy -= 200;
         }
     }
 
