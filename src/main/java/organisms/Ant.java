@@ -14,6 +14,7 @@ public class Ant {
     public Point position;
     public boolean hasFood;
     public int mapSize = 900;
+    private Point lastRandomPoint;
 
     public Ant(int health, int energy, Point position) {
         this.health = health;
@@ -27,7 +28,6 @@ public class Ant {
 
         if (checkFood(position) == true){
             eat();
-            System.out.println("found food");
             return;
         }
 
@@ -35,21 +35,18 @@ public class Ant {
             if (hasFood == true){
                 AntSimulator.getInstance().queen.addEnergy();
                 hasFood = false;
-                System.out.println("returned food to queen");
+                return;
             }
         }
 
         if (hasFood == true){
             findFarthestHomePheromone();
             releaseFoodPheromone();
-            System.out.println("returning food");
         return;
         }
         else{
-            releaseHomePheromone();
            findFarthestFoodPheromone();
-            System.out.println("looking for food");
-
+           releaseHomePheromone();
         }
         
     }
@@ -74,19 +71,26 @@ public class Ant {
     }
 
     public void findFarthestHomePheromone() {
-        int maxDistance = 100; // Maximum distance range
+        int minDistance = 50; // Minimum distance range
+        int maxDistance = 150; // Maximum distance range
+    
         Point farthestHomePheromone = null;
+        double farthestHomePheromoneDistance = 0;
     
         for (Pheromone pheromone : AntSimulator.getInstance().homePheromones) {
-            int distance = Math.abs(pheromone.position.x - position.x) + Math.abs(pheromone.position.y - position.y);
-            if (distance <= maxDistance && (farthestHomePheromone == null || distance > maxDistance)) {
-                // Check if the distance is within range and greater than the current maxDistance
-                maxDistance = distance;
+            int dx = pheromone.position.x - position.x;
+            int dy = pheromone.position.y - position.y;
+            // Calculate the distance between the current position and the target
+            double distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance >= minDistance && distance <= maxDistance &&
+                (farthestHomePheromone == null || distance > farthestHomePheromoneDistance)) {
+                // Check if the distance is within the specified range and greater than the current maxDistance
                 farthestHomePheromone = pheromone.position;
+                farthestHomePheromoneDistance = distance;
             }
         }
-
-        if (!goToQueen()){
+    
+        if (!goToQueen()) {
             if (farthestHomePheromone != null) {
                 moveDirection(farthestHomePheromone);
             } else {
@@ -94,32 +98,37 @@ public class Ant {
             }
         }
     }
+    
 
     public void findFarthestFoodPheromone() {
-        int maxDistance = 100; // Maximum distance range
+        int minDistance = 50; // Minimum distance range
+        int maxDistance = 150; // Maximum distance range
+    
         Point farthestFoodPheromone = null;
+        double farthestFoodPheromoneDistance = 0;
     
         for (Pheromone pheromone : AntSimulator.getInstance().foodPheromones) {
-            int distance = Math.abs(pheromone.position.x - position.x) + Math.abs(pheromone.position.y - position.y);
-            if (distance <= maxDistance && (farthestFoodPheromone == null || distance > maxDistance)) {
-                // Check if the distance is within range and greater than the current maxDistance
-                maxDistance = distance;
+            int dx = pheromone.position.x - position.x;
+            int dy = pheromone.position.y - position.y;
+            // Calculate the distance between the current position and the target
+            double distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance >= minDistance && distance <= maxDistance &&
+                (farthestFoodPheromone == null || distance > farthestFoodPheromoneDistance)) {
+                // Check if the distance is within the specified range and greater than the current maxDistance
                 farthestFoodPheromone = pheromone.position;
+                farthestFoodPheromoneDistance = distance;
             }
         }
-
-        if (!lookAround()){
-            System.out.println("did not find food around");
-            if (farthestFoodPheromone != null) {
-                System.out.println("found food pheromone");
+    
+        if (!lookAround()) {
+            if (farthestFoodPheromoneDistance > minDistance) {  // Check if a valid farthest food pheromone is found
                 moveDirection(farthestFoodPheromone);
             } else {
-                System.out.println("did not find food pheromone");
                 randomPoint();
             }
         }
     }
-
+    
     public boolean lookAround(){
         // look for the nearest food around in a radius of 50
 
@@ -160,12 +169,17 @@ public class Ant {
         return false;
     }
 
-    public void randomPoint(){
+    public void randomPoint() {
         Random random = new Random();
-        int x = random.nextInt(mapSize);
-        int y = random.nextInt(mapSize);
-        Point randomPoint = new Point(x, y);
-        moveDirection(randomPoint);
+
+        // Generate a new random point only if it's the first call or the ant reached the previous random point
+        if (lastRandomPoint == null || position.equals(lastRandomPoint)) {
+            int x = random.nextInt(mapSize);
+            int y = random.nextInt(mapSize);
+            lastRandomPoint = new Point(x, y);
+        }
+
+        moveDirection(lastRandomPoint);
     }
 
     public boolean checkFood(Point position) {
@@ -200,9 +214,12 @@ public class Ant {
             // Update the position
             position.x += (int) stepX;
             position.y += (int) stepY;
+
+            System.out.println("moving to " + target.x + " " + target.y);
         }
     }
     
 
 
 }
+
