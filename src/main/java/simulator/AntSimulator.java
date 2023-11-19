@@ -142,7 +142,7 @@ public class AntSimulator extends JPanel {
 
     private void drawQueen(Graphics g) {
         // Draw body
-        g.setColor(Color.RED);
+        g.setColor(new Color(100, 0, 0));
         g.fillRect(queen.position.x, queen.position.y, 20, 20);
     
         // Draw mid part
