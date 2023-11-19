@@ -1,5 +1,6 @@
 package organisms;
 import java.util.Iterator;
+import java.util.Random;
 
 import simulator.AntSimulator;
 import simulator.Point;
@@ -22,39 +23,19 @@ public class Ant {
     public void move() {
 
         if (hasFood == true){
-            queenDirection();
-
-             if (direction == "N") {
-            position.y--;
-        } else if (direction == "S") {
-            position.y++;
-        } else if (direction == "E") {
-            position.x++;
-        } else if (direction == "W") {
-            position.x--;
-        }
+        queenDirection();
         releaseFoodPheromone();
         return;
-
         }
 
         findNearestFood();
-        if (direction == "N") {
-            position.y--;
-        } else if (direction == "S") {
-            position.y++;
-        } else if (direction == "E") {
-            position.x++;
-        } else if (direction == "W") {
-            position.x--;
-        }
 
         if (checkFood(position) == true){
             eat();
+            return;
         }
         releaseHomePheromone();
-
-        energy--;
+        
     }
 
     public void releaseHomePheromone() {
@@ -81,7 +62,7 @@ public class Ant {
             AntSimulator.getInstance().queen.energy += 50;
             hasFood = false;
         } else {
-            direction = moveDirection(AntSimulator.getInstance().queen.position);
+            moveDirection(AntSimulator.getInstance().queen.position);
         }
     }
 
@@ -95,7 +76,7 @@ public class Ant {
                 nearestFood = food.position;
             }
         }
-        direction = moveDirection(nearestFood);
+        moveDirection(nearestFood);
     }
 
     public boolean checkFood(Point position) {
@@ -107,18 +88,32 @@ public class Ant {
         return false;
     }
 
-    public String moveDirection(Point point){
-        if (point.x > position.x) {
-            return "E";
-        } else if (point.x < position.x) {
-            return "W";
-        } else if (point.y > position.y) {
-            return "S";
-        } else if (point.y < position.y) {
-            return "N";
+    public void moveDirection(Point target) {
+        double speed = 2.0;  // Adjust the speed as needed
+        double randomness = 1;  // Adjust the randomness as needed
+    
+        int dx = target.x - position.x;
+        int dy = target.y - position.y;
+    
+        // Calculate the distance between the current position and the target
+        double distance = Math.sqrt(dx * dx + dy * dy);
+    
+        // Check if the ant is already at the target
+        if (distance > 0) {
+            // Calculate the step towards the target
+            double stepX = speed * dx / distance;
+            double stepY = speed * dy / distance;
+    
+            // Add some randomness to the step
+            stepX += (Math.random() * 2 - 1) * randomness;
+            stepY += (Math.random() * 2 - 1) * randomness;
+    
+            // Update the position
+            position.x += (int) stepX;
+            position.y += (int) stepY;
         }
-        return "N";
     }
+    
 
 
 }
