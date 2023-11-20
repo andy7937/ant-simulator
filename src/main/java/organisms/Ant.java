@@ -16,6 +16,8 @@ public class Ant {
     public int mapSize = 900;
     public Point lastRandomPoint;
     public Point lastFoodPoint = new Point( -1, -1);
+    public double speedX;
+    public double speedY;
 
     public Ant(int health, int energy, Point position) {
         this.health = health;
@@ -130,11 +132,8 @@ public class Ant {
                     return;
                 }
                 moveDirection(lastFoodPoint);
-                System.out.println("last Direction: " + lastFoodPoint.x + " " + lastFoodPoint.y);
             } else {
-                randomDirection();
-                lastFoodPoint = lastRandomPoint;
-                System.out.println("random Direction: " + lastFoodPoint.x + " " + lastFoodPoint.y);
+                randomDirection();        
             }
         }
     }
@@ -183,19 +182,49 @@ public class Ant {
         // Generate a new random point only if it's the first call or the ant is close to the previous random point
         double distanceThreshold = 3.0; // Adjust the threshold as needed
     
+        // Generate a new random point only if it's the first call or the ant is close to the previous random point
         if (lastRandomPoint == null || distanceTo(lastRandomPoint) < distanceThreshold) {
             lastRandomPoint = randomPoint();
         }
+
     
-        moveDirection(lastRandomPoint);
+        int minDistance = 0; // Minimum distance range
+        int maxDistance = 100; // Maximum distance range
+        int strength = 0;
+        int lastStrength = 0;
+        Point temp = null;
+
+        // each time you want to go a random direction, make sure there are no food pheromones around you or food, if there is the ant will prioritize that over going a random direction
+        for (Pheromone pheromone : AntSimulator.getInstance().foodPheromones) {
+            double distance = distanceTo(pheromone.position);
+            strength = pheromone.Strength;
+            if ((distance <= maxDistance && distance >= minDistance) && strength > lastStrength) {
+                // Check if the distance is within range and greater than the current maxDistance
+                temp = pheromone.position;
+            }
+        }
+
+        // checking for food around the ant
+        if (!lookAround()){
+            if (temp == null){
+                lastFoodPoint = lastRandomPoint;
+                moveDirection(lastRandomPoint);
+            }
+            else{
+                lastFoodPoint = temp;
+                moveDirection(lastFoodPoint);
+        }
+    }
     }
 
     public Point randomPoint(){
         Random random = new Random();
         int x = random.nextInt(mapSize);
         int y = random.nextInt(mapSize);
+        
         return new Point(x, y);
     }
+
 
     // Helper method to calculate the distance between two points
     private double distanceTo(Point target) {

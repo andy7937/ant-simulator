@@ -24,6 +24,20 @@ public class AntSimulator extends JPanel {
     public List<Pheromone> homePheromones = new ArrayList<>();
     public Queen queen;
 
+    // SETTINGS
+
+    // number of ants at start
+    public int antNum = 30;
+
+    // number of food group clusters
+    public int foodClump = 10;
+
+    // average number of foods in cluster
+    public int numFoods = 100;
+
+    // radius of food cluster
+    public int groupRadius = 20;
+
     private static AntSimulator instance;
 
     private AntSimulator() {
@@ -46,12 +60,12 @@ public class AntSimulator extends JPanel {
         queen = new Queen(100, 0, new Point (x, y));
 
         // spawn 10 at queen location
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < antNum; i++) {
             ants.add(new Ant(100, 500, new Point(x, y)));
         }
 
         // how many clumps of food you want to spawn on the map. E.g 20 clumps will make 20 groups around the map of random foods each
-        spawnFoodGroup(25);
+        spawnFoodGroup(foodClump);
 
     }
 
@@ -108,11 +122,6 @@ public class AntSimulator extends JPanel {
     private void spawnFoodGroup(int numGroups) {
         Random random = new Random();
     
-        // how many max food you want in each group
-        int numFoods = 10;
-    
-        // radius of each food group
-        int groupRadius = 20;
     
         for (int i = 0; i < numGroups; i++) {
             int groupX = random.nextInt(mapSize);

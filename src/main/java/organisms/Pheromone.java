@@ -12,7 +12,7 @@ public class Pheromone {
         this.position = position;
 
         // increase strength based on distance from queen
-        this.Strength = 1000 + ((int) Math.sqrt(Math.pow(AntSimulator.getInstance().queen.position.x - position.x, 2) + Math.pow(AntSimulator.getInstance().queen.position.y - position.y, 2)) * 200) ;
+        this.Strength = 1000 + ((int) Math.sqrt(Math.pow(AntSimulator.getInstance().queen.position.x - position.x, 2) + Math.pow(AntSimulator.getInstance().queen.position.y - position.y, 2)) * 2000) ;
     }
 
     public void update(){
