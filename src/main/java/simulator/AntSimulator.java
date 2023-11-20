@@ -46,7 +46,7 @@ public class AntSimulator extends JPanel {
         queen = new Queen(100, 0, new Point (x, y));
 
         // spawn 10 at queen location
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 20; i++) {
             ants.add(new Ant(100, 500, new Point(x, y)));
         }
 
@@ -109,10 +109,10 @@ public class AntSimulator extends JPanel {
         Random random = new Random();
     
         // how many max food you want in each group
-        int numFoods = 20;
+        int numFoods = 10;
     
         // radius of each food group
-        int groupRadius = 100;
+        int groupRadius = 20;
     
         for (int i = 0; i < numGroups; i++) {
             int groupX = random.nextInt(mapSize);

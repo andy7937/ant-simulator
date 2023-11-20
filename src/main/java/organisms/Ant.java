@@ -50,10 +50,24 @@ public class Ant {
     }
 
     public void releaseHomePheromone() {
+        for (Pheromone pheromone : AntSimulator.getInstance().homePheromones) {
+            if (pheromone.position.x == position.x && pheromone.position.y == position.y) {
+                pheromone.strengthen();  // Assuming you have a method to increase the strength
+                return;
+            }
+        }
+        // If no existing pheromone found, add a new one
         AntSimulator.getInstance().homePheromones.add(new Pheromone(new Point(position.x, position.y)));
     }
 
-    public void releaseFoodPheromone(){
+    public void releaseFoodPheromone() {
+        for (Pheromone pheromone : AntSimulator.getInstance().foodPheromones) {
+            if (pheromone.position.x == position.x && pheromone.position.y == position.y) {
+                pheromone.strengthen();  // Assuming you have a method to increase the strength
+                return;
+            }
+        }
+        // If no existing pheromone found, add a new one
         AntSimulator.getInstance().foodPheromones.add(new Pheromone(new Point(position.x, position.y)));
     }
 
@@ -94,11 +108,14 @@ public class Ant {
     public void findFarthestFoodPheromone() {
         int minDistance = 150; // Minimum distance range
         int maxDistance = 250; // Maximum distance range
+        int strength = 0;
+        int lastStrength = 0;
 
         if ((lastFoodPoint.x == position.x && lastFoodPoint.y == position.y) || (lastFoodPoint.x == -1 && lastFoodPoint.y == -1)){
             for (Pheromone pheromone : AntSimulator.getInstance().foodPheromones) {
                 double distance = distanceTo(pheromone.position);
-                if (distance <= maxDistance && distance >= minDistance) {
+                strength = pheromone.Strength;
+                if ((distance <= maxDistance && distance >= minDistance) && strength > lastStrength) {
                     // Check if the distance is within range and greater than the current maxDistance
                     lastFoodPoint = pheromone.position;
                 }
@@ -107,10 +124,18 @@ public class Ant {
     
         if (!lookAround()){
             if (lastFoodPoint.x != -1) {       
+                if (lastFoodPoint.x == position.x && lastFoodPoint.y == position.y){
+                    randomDirection();
+                    lastFoodPoint = lastRandomPoint;
+                    System.out.println("random Direction: " + lastFoodPoint.x + " " + lastFoodPoint.y);
+                    return;
+                }
                 moveDirection(lastFoodPoint);
+                System.out.println("last Direction: " + lastFoodPoint.x + " " + lastFoodPoint.y);
             } else {
                 randomDirection();
                 lastFoodPoint = lastRandomPoint;
+                System.out.println("random Direction: " + lastFoodPoint.x + " " + lastFoodPoint.y);
             }
         }
     }
@@ -132,7 +157,6 @@ public class Ant {
 
         if (nearestFood != null) {
             moveDirection(nearestFood);
-            System.out.println("nearest food: " + nearestFood.x + " " + nearestFood.y);
             return true;
         } else {
             return false;

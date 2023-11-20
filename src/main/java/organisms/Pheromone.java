@@ -19,4 +19,8 @@ public class Pheromone {
             AntSimulator.getInstance().foodPheromones.remove(this);
         }
     }
+
+    public void strengthen(){
+        Strength += 300;
+    }
 }
