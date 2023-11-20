@@ -109,7 +109,7 @@ public class AntSimulator extends JPanel {
         Random random = new Random();
     
         // how many max food you want in each group
-        int numFoods = 100;
+        int numFoods = 20;
     
         // radius of each food group
         int groupRadius = 100;
@@ -198,7 +198,7 @@ public class AntSimulator extends JPanel {
     }
 
     private void drawPheromones(Graphics g) {
-        g.setColor(Color.BLUE);
+        g.setColor(Color.ORANGE);
         for (Pheromone pheromone : foodPheromones) {
             g.fillOval(pheromone.position.x, pheromone.position.y, 3, 3);
         }
